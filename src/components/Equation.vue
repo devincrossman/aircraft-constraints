@@ -23,9 +23,9 @@ export default class Equation extends Vue {
    */
   @Watch('data')
   renderMathJax() {
-    if((<any>window).MathJax) {
-      this.$nextTick().then(()=>{
-        (<any>window).MathJax.Hub.Queue(["Typeset", (<any>window).MathJax.Hub, this.$refs.mathJaxEl]);
+    if ((window as any).MathJax) {
+      this.$nextTick().then(() => {
+        (window as any).MathJax.Hub.Queue(['Typeset', (window as any).MathJax.Hub, this.$refs.mathJaxEl]);
       });
     }
   }
