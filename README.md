@@ -1,4 +1,5 @@
-# constraints
+# aircraft-constraints
+wip constraints analysis tool for aircraft design
 
 ## Project setup
 ```
@@ -13,14 +14,4 @@ yarn run serve
 ### Compiles and minifies for production
 ```
 yarn run build
-```
-
-### Run your tests
-```
-yarn run test
-```
-
-### Lints and fixes files
-```
-yarn run lint
 ```
