@@ -15,3 +15,5 @@ yarn run serve
 ```
 yarn run build
 ```
+
+aircraft favicon from icons8.com
