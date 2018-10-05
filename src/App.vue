@@ -1,17 +1,16 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
+    <ConstraintsGraph/>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import HelloWorld from './components/HelloWorld.vue';
+import ConstraintsGraph from '@/components/ConstraintsGraph.vue';
 
 @Component({
   components: {
-  HelloWorld,
+  ConstraintsGraph,
   },
   })
 export default class App extends Vue {}
