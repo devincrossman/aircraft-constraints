@@ -15,11 +15,23 @@
             <option value="editTakeoffRun">Takeoff run</option>
             <option value="editSustainedTurn">Sustained turn</option>
             <option value="editClimbRate">Climb rate</option>
+            <option value="editClimbAngle">Climb angle</option>
           </select>
           <fieldset v-show="editWhichConstraint === 'editTakeoffRun'">
             <legend>Takeoff run</legend>
-            <Equation data="$$\frac{T_{TO}}{W_{TO}} = \frac{k_{TO}^2}{s_G\cdot\rho_{TO}
-              \cdot g_0\cdot C_{L_{TO}}}\cdot\frac{W_{TO}}{S}$$"/>
+            <Equation data="$$\frac{T_{TO}}{W_{TO}} = \frac{\beta^2}{\alpha} \cdot
+              \frac{k_{TO}^2}{s_G\cdot\rho_{TO} \cdot g_0\cdot C_{L_{TO}}}\cdot
+              \frac{W_{TO}}{S}$$"/>
+            <label><Equation data="$\beta$" title="Weight fraction"/>
+              <input type="range" min="0" max="1" step=".05"
+                v-model.number="takeoffRunConstraint.weightFraction"/>
+              <input v-model.number="takeoffRunConstraint.weightFraction"/>
+            </label>
+            <label><Equation data="$\alpha$" title="Thrust fraction"/>
+              <input type="range" min="0" max="1" step=".05"
+                v-model.number="takeoffRunConstraint.thrustFraction"/>
+              <input v-model.number="takeoffRunConstraint.thrustFraction"/>
+            </label>
             <label><Equation data="$k_{TO}$" title="Takeoff speed coefficient"/>
               <input type="range" min="1" max="2" step="0.05"
                 v-model.number="takeoffRunConstraint.takeoffSpeedCoeff"/>
@@ -50,8 +62,8 @@
             <label><Equation data="$q$" title="Dynamic pressure"/>
               <input type="range" min="0" max="1000" step=".1"
                 v-model.number="sustainedTurnConstraint.dynamicPressure"/>
-              <input v-model.number="sustainedTurnConstraint.dynamicPressure"/>
-              <Equation data="$lb/ft^2$"/>
+              <span><input v-model.number="sustainedTurnConstraint.dynamicPressure"/>
+              <Equation data="$lb/ft^2$"/></span>
             </label>
             <label><Equation data="$C_{D_{min}}$" title="Minimum drag coefficient"/>
               <input type="range" min="0" max="0.05" step=".005"
@@ -76,20 +88,20 @@
             <label><Equation data="$q$" title="Dynamic pressure"/>
               <input type="range" min="0" max="1000" step=".1"
                 v-model.number="climbRateConstraint.dynamicPressure"/>
-              <input v-model.number="climbRateConstraint.dynamicPressure"/>
-              <Equation data="$lb/ft^2$"/>
+              <span><input v-model.number="climbRateConstraint.dynamicPressure"/>
+              <Equation data="$lb/ft^2$"/></span>
             </label>
             <label><Equation data="$V_{v}$" title="Vertical speed"/>
-              <input type="range" min="0" max="20" step="1"
+              <input type="range" min="0" max="40" step="1"
                 v-model.number="climbRateConstraint.verticalSpeed"/>
-              <input v-model.number="climbRateConstraint.verticalSpeed"/>
-              <Equation data="$ft/s$"/>
+              <span><input v-model.number="climbRateConstraint.verticalSpeed"/>
+              <Equation data="$ft/s$"/></span>
             </label>
             <label><Equation data="$V_{cruise}$" title="Cruise speed"/>
               <input type="range" min="0" max="500" step="10"
                 v-model.number="climbRateConstraint.cruiseSpeed"/>
-              <input v-model.number="climbRateConstraint.cruiseSpeed"/>
-              <Equation data="$ft/s$"/>
+              <span><input v-model.number="climbRateConstraint.cruiseSpeed"/>
+              <Equation data="$ft/s$"/></span>
             </label>
             <label><Equation data="$C_{D_{min}}$" title="Minimum drag coefficient"/>
               <input type="range" min="0" max="0.05" step=".005"
@@ -100,6 +112,44 @@
               <input type="range" min="0" max="0.05" step=".005"
                 v-model.number="climbRateConstraint.liftInducedDragCoeff "/>
               <input v-model.number="climbRateConstraint.liftInducedDragCoeff"/>
+            </label>
+          </fieldset>
+          <fieldset v-show="editWhichConstraint === 'editClimbAngle'">
+            <legend>Climb angle</legend>
+            <Equation data="$$\frac{T_{TO}}{W_{TO}} = \frac{\beta}{\alpha} \left[ k\left(
+              \frac{\beta W_{TO}}{qS}\right) + \frac{C_{D_{min}}}{\left(\frac{\beta W_{TO}}{qS}
+              \right)} + \sin\theta\right]$$"/>
+            <label><Equation data="$\beta$" title="Weight fraction"/>
+              <input type="range" min="0" max="1" step=".05"
+                v-model.number="climbAngleConstraint.weightFraction"/>
+              <input v-model.number="climbAngleConstraint.weightFraction"/>
+            </label>
+            <label><Equation data="$\alpha$" title="Thrust fraction"/>
+              <input type="range" min="0" max="1" step=".05"
+                v-model.number="climbAngleConstraint.thrustFraction"/>
+              <input v-model.number="climbAngleConstraint.thrustFraction"/>
+            </label>
+            <label><Equation data="$k$" title="Lift induced drag constant"/>
+              <input type="range" min="0" max="10" step=".1"
+                v-model.number="climbAngleConstraint.liftInducedDragConst"/>
+              <input v-model.number="climbAngleConstraint.liftInducedDragConst"/>
+            </label>
+            <label><Equation data="$q$" title="Dynamic pressure"/>
+              <input type="range" min="0" max="1000" step="1"
+                v-model.number="climbAngleConstraint.dynamicPressure"/>
+              <span><input v-model.number="climbAngleConstraint.dynamicPressure"/>
+              <Equation data="$lb/ft^2$"/></span>
+            </label>
+            <label><Equation data="$C_{D_{min}}$" title="Minimum drag coefficient"/>
+              <input type="range" min="0" max="0.05" step=".005"
+                v-model.number="climbAngleConstraint.minDragCoeff"/>
+              <input v-model.number="climbAngleConstraint.minDragCoeff"/>
+            </label>
+            <label><Equation data="$\theta$" title="Climb angle"/>
+              <input type="range" min="0" max="20" step=".1"
+                v-model.number="climbAngleConstraint.climbAngle "/>
+              <span><input v-model.number="climbAngleConstraint.climbAngle"/>
+              <Equation data="$\deg$"/></span>
             </label>
           </fieldset>
         </form>
@@ -116,6 +166,7 @@ import {
   TakeoffRunConstraint,
   SustainedTurnConstraint,
   ClimbRateConstraint,
+  ClimbAngleConstraint,
 } from '@/interfaces/constraints';
 
 @Component({
@@ -128,6 +179,7 @@ export default class ConstraintsGraph extends Vue {
   /**
    * whether the app is online or not
    */
+  /* eslint-disable-next-line class-methods-use-this */
   get isOnline() {
     return window.navigator.onLine;
   }
@@ -136,6 +188,8 @@ export default class ConstraintsGraph extends Vue {
    * data fields for take off run constraint
    */
   public takeoffRunConstraint: TakeoffRunConstraint = {
+    weightFraction: 1,
+    thrustFraction: 1,
     takeoffSpeedCoeff: 1.2,
     liftCoefficientTakeoff: 2.9,
     groundRun: 1200, // ft
@@ -159,8 +213,20 @@ export default class ConstraintsGraph extends Vue {
     dynamicPressure: 59, // lb/ft^2
     minDragCoeff: 0.03,
     liftInducedDragCoeff: 0.022,
-    verticalSpeed: 10, // ft/s
+    verticalSpeed: 20, // ft/s
     cruiseSpeed: 220, // ft/s
+  }
+
+  /**
+   * data fields for climb angle constraint
+   */
+  public climbAngleConstraint: ClimbAngleConstraint = {
+    weightFraction: 1,
+    thrustFraction: 1,
+    liftInducedDragConst: 0.022,
+    dynamicPressure: 59,
+    minDragCoeff: 0.03,
+    climbAngle: 3.1,
   }
 
   /**
@@ -174,20 +240,33 @@ export default class ConstraintsGraph extends Vue {
   private xAxis = Array.from({ length: 500 }, (v, k) => (k+1) / 10);
 
   /**
+   * an array of constraint functions that calculate the thrust to weight ratio
+   * and take the wing loading (W_TO)/S as an input paramater
+   */
+  private constraintFunctions = [
+    this.takeoffRun,
+    this.sustainedTurn,
+    this.climbRate,
+    this.climbAngle,
+  ]
+
+  /**
    * the minimum thrust to weight ratio
    */
   get minThrustToWeight(): number {
-    let minThrustToWeight: number = Math.max(
-      this.takeoffRun(this.xAxis[0]),
-      this.sustainedTurn(this.xAxis[0]),
-      this.climbRate(this.xAxis[0]),
+    let minThrustToWeight: number = this.constraintFunctions.reduce(
+      (max, constraint) =>
+        (max > constraint.apply(this, [this.xAxis[0]]) ? max
+          : constraint.apply(this, [this.xAxis[0]]))
+      , 0,
     );
     let wingLoadingAtMinThrustToWeight: number = this.xAxis[0];
     this.xAxis.forEach((wingLoading) => {
-      const minThrustToWeightAtThisWingLoading = Math.max(
-        this.takeoffRun(wingLoading),
-        this.sustainedTurn(wingLoading),
-        this.climbRate(wingLoading),
+      const minThrustToWeightAtThisWingLoading = this.constraintFunctions.reduce(
+        (max, constraint) =>
+          (max > constraint.apply(this, [wingLoading]) ? max
+            : constraint.apply(this, [wingLoading]))
+        , 0,
       );
       if (minThrustToWeightAtThisWingLoading < minThrustToWeight) {
         minThrustToWeight = minThrustToWeightAtThisWingLoading;
@@ -208,22 +287,21 @@ export default class ConstraintsGraph extends Vue {
     const header = [
       { label: 'Wing loading', type: 'number' }, { label: 'Takeoff run', type: 'number' },
       { label: 'Sustained turn', type: 'number' }, { label: 'Climb rate', type: 'number' },
+      { label: 'Climb angle', type: 'number' },
+      // separate series for optimum point annotation
       { type: 'number' }, { type: 'string', role: 'annotation' },
-      { type: 'string', role: 'annotationText' },
+      { type: 'string', role: 'annotationText', p: { html: true } },
     ];
     const rows = this.xAxis.map((wingLoading) => {
-      const thrustToWeightRatios = [
-        this.takeoffRun(wingLoading),
-        this.sustainedTurn(wingLoading),
-        this.climbRate(wingLoading),
-      ];
+      const thrustToWeightRatios = this.constraintFunctions.map(constraint =>
+        constraint.apply(this, [wingLoading]));
+      let optimumPoint = null;
       let annotation = null;
       let annotationText = null;
-      let optimumPoint = null;
       if (Math.max(...thrustToWeightRatios) === this.minThrustToWeight) {
-        annotation = 'Optimum';
-        annotationText = `Optimum T/W: ${this.minThrustToWeight}`;
         optimumPoint = this.minThrustToWeight;
+        annotation = 'Optimum';
+        annotationText = `Optimum T/W: ${this.minThrustToWeight}<br>Optimum W/S: ${wingLoading}`;
       }
       return [
         wingLoading,
@@ -253,9 +331,10 @@ export default class ConstraintsGraph extends Vue {
     return {
       title: 'Design space',
       height: 500,
+      tooltip: { isHtml: true },
       seriesType: 'area',
       series: {
-        3: { visibleInLegend: false },
+        4: { visibleInLegend: false },
       },
       hAxis: {
         title: 'W/S',
@@ -277,20 +356,22 @@ export default class ConstraintsGraph extends Vue {
 
   /**
    * Thrust to weight ratio for take off run as a function of wing loading
-   * @param {number} wingLoading the wing loading at takeoff (W_TO)/S [lbf/ft^2]
+   * @param {number} wingLoading the wing loading (W_TO)/S [lbf/ft^2]
    * @returns {number} thrust to weight ratio
    */
   public takeoffRun(wingLoading: number): number {
+    const b = this.takeoffRunConstraint.weightFraction;
+    const a = this.takeoffRunConstraint.thrustFraction;
     const k = this.takeoffRunConstraint.takeoffSpeedCoeff;
     const Sg = this.takeoffRunConstraint.groundRun;
     const rho = this.takeoffRunConstraint.densityAtTakeoff;
     const CL = this.takeoffRunConstraint.liftCoefficientTakeoff;
-    return ((k**2) / (Sg * rho * 32.2 * CL)) * wingLoading;
+    return ((b**2) / a) * ((k**2) / (Sg * rho * 32.2 * CL)) * wingLoading;
   }
 
   /**
    * Thrust to weight ratio for landing distance as a function of wing loading
-   * @param {number} wingLoading the wing loading at takeoff (W_TO)/S
+   * @param {number} wingLoading the wing loading (W_TO)/S
    * @returns {number} thrust to weight ratio
    */
   public sustainedTurn(wingLoading: number): number {
@@ -303,7 +384,7 @@ export default class ConstraintsGraph extends Vue {
 
   /**
    * Thrust to weight ratio for climb rate as a function of wing loading
-   * @param {number} wingLoading the wing loading at takeoff (W_TO)/S
+   * @param {number} wingLoading the wing loading (W_TO)/S
    * @returns {number} thrust to weight ratio
    */
   public climbRate(wingLoading: number): number {
@@ -314,6 +395,22 @@ export default class ConstraintsGraph extends Vue {
     const CDinduced = this.climbRateConstraint.liftInducedDragCoeff;
     return (Vv / V) + ((q / wingLoading) * CDmin) + ((CDinduced / q) * wingLoading);
   }
+
+  /**
+   * Thrust to weight ratio for climb angle as a function of wing loading
+   * @param {number} wingLoading the wing loading (W_TO)/S
+   * @returns {number} thrust to weight ratio
+   */
+  public climbAngle(wingLoading: number): number {
+    const b = this.climbAngleConstraint.weightFraction;
+    const a = this.climbAngleConstraint.thrustFraction;
+    const k = this.climbAngleConstraint.liftInducedDragConst;
+    const q = this.climbAngleConstraint.dynamicPressure;
+    const CDmin = this.climbAngleConstraint.minDragCoeff;
+    const theta = this.climbAngleConstraint.climbAngle * (Math.PI / 180);
+    return (b / a) * ((k * (b / q) * wingLoading) + (CDmin / ((b / q) * wingLoading))
+      + Math.sin(theta));
+  }
 }
 </script>
 
@@ -323,9 +420,11 @@ export default class ConstraintsGraph extends Vue {
     display: flex;
     flex-wrap: wrap;
   }
+
   #chart {
     width:100%;
   }
+
   #inputs {
     flex: 1;
   }
@@ -334,6 +433,7 @@ export default class ConstraintsGraph extends Vue {
       flex: 1;
       max-width: 70%;
     }
+
     #inputs {
       flex: 1;
       max-width:30%;
@@ -360,13 +460,24 @@ export default class ConstraintsGraph extends Vue {
     label {
       display: flex;
       flex-direction: column;
-      margin: 0.5em 0;
+      padding: 0.5em 0;
 
-      & > * {
-        width: calc(100% - 1em - 4px);
+      & > input[type="range"] {
+        width: 100%;
+        margin: 0.5em 0;
+        padding: 0;
       }
-      & > span:last-child > span {
-        margin-left: 0.5em;
+
+      & > span:last-child {
+        display: flex;
+
+        & > input {
+          flex: 1;
+        }
+
+        & > span {
+          margin-left: 0.5em;
+        }
       }
     }
   }

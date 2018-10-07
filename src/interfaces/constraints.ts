@@ -1,5 +1,13 @@
 export interface TakeoffRunConstraint {
   /**
+   * weight fraction [dimensionless]
+   */
+  weightFraction: number,
+  /**
+   * thrust fraction [dimensionless]
+   */
+  thrustFraction: number,
+  /**
    * takeoff speed coefficient
    */
   takeoffSpeedCoeff: number,
@@ -54,7 +62,34 @@ export interface ClimbRateConstraint {
    */
   minDragCoeff: number,
   /**
-   * lift induced drag 
+   * lift induced drag
    */
   liftInducedDragCoeff: number,
+}
+
+export interface ClimbAngleConstraint {
+  /**
+   * weight fraction [dimensionless]
+   */
+  weightFraction: number,
+  /**
+   * thrust fraction [dimensionless]
+   */
+  thrustFraction: number,
+  /**
+   * lift induced drag constant [dimensionless]
+   */
+  liftInducedDragConst: number,
+  /**
+   * dynamic pressure [lb/ft^2]
+   */
+  dynamicPressure: number,
+  /**
+   * minimum drag coefficient [dimensionless]
+   */
+  minDragCoeff: number,
+  /**
+   * climb angle [deg]
+   */
+  climbAngle: number
 }
