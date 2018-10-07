@@ -2,11 +2,12 @@
   <div class="constraints-graph">
     <h1>Constraint Analysis</h1>
     <div id="constraints-graph-ui">
-      <div id="chart">
+      <div id="chart" v-if="isOnline">
         <GChart type="ComboChart" :data="chartData" :options="chartOptions"/>
         <label>Ymin: <input v-model.number="ymin"/></label><br>
         <label>Ymax: <input v-model.number="ymax"/></label>
       </div>
+      <div v-else>Charts are not available offline</div>
       <div id="inputs">
         <form id="constraint-form">
           <select v-model="editWhichConstraint">
@@ -125,6 +126,13 @@ import {
   })
 export default class ConstraintsGraph extends Vue {
   /**
+   * whether the app is online or not
+   */
+  get isOnline() {
+    return window.navigator.onLine;
+  }
+
+  /**
    * data fields for take off run constraint
    */
   public takeoffRunConstraint: TakeoffRunConstraint = {
@@ -225,7 +233,6 @@ export default class ConstraintsGraph extends Vue {
         annotationText];
     });
     const data = [header, ...rows];
-    console.log(data);
     return data;
   }
 
@@ -271,7 +278,7 @@ export default class ConstraintsGraph extends Vue {
   /**
    * Thrust to weight ratio for take off run as a function of wing loading
    * @param {number} wingLoading the wing loading at takeoff (W_TO)/S [lbf/ft^2]
-   * @return {number} thrust to weight ratio
+   * @returns {number} thrust to weight ratio
    */
   public takeoffRun(wingLoading: number): number {
     const k = this.takeoffRunConstraint.takeoffSpeedCoeff;
@@ -284,7 +291,7 @@ export default class ConstraintsGraph extends Vue {
   /**
    * Thrust to weight ratio for landing distance as a function of wing loading
    * @param {number} wingLoading the wing loading at takeoff (W_TO)/S
-   * @return {number} thrust to weight ratio
+   * @returns {number} thrust to weight ratio
    */
   public sustainedTurn(wingLoading: number): number {
     const q = this.sustainedTurnConstraint.dynamicPressure;
@@ -297,7 +304,7 @@ export default class ConstraintsGraph extends Vue {
   /**
    * Thrust to weight ratio for climb rate as a function of wing loading
    * @param {number} wingLoading the wing loading at takeoff (W_TO)/S
-   * @return {number} thrust to weight ratio
+   * @returns {number} thrust to weight ratio
    */
   public climbRate(wingLoading: number): number {
     const q = this.climbRateConstraint.dynamicPressure;
