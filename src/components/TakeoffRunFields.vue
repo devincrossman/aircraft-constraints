@@ -19,7 +19,7 @@
         v-model.number="constraint.takeoffSpeedCoeff"/>
       <input v-model.number="constraint.takeoffSpeedCoeff"/>
     </label>
-    <label><Equation data="$C_{L_{TO}}$" title="Takeoff lift coefficient"/>
+    <label><Equation data="$C_{L_{TO}}$" title="Lift coefficient"/>
       <input type="range" min="0" max="3" step="0.05"
         v-model.number="constraint.liftCoefficientTakeoff"/>
       <input v-model.number="constraint.liftCoefficientTakeoff"/>
@@ -30,10 +30,10 @@
       <span><input v-model.number="constraint.groundRun"/>
       <Equation data="$ft$"/></span>
     </label>
-    <label><Equation data="$\rho_{TO}$" title="Density at takeoff"/>
+    <label><Equation data="$\rho$" title="Density"/>
       <input type="range" min="0.0004" max=".003" step="0.0001"
-        v-model.number="constraint.densityAtTakeoff"/>
-      <span><input v-model.number="constraint.densityAtTakeoff"/>
+        v-model.number="constraint.density"/>
+      <span><input v-model.number="constraint.density"/>
       <Equation data="$slugs/ft^3$"/></span>
     </label>
   </fieldset>

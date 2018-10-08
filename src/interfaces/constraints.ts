@@ -20,9 +20,9 @@ export interface TakeoffRunConstraint {
    */
   groundRun: number,
   /**
-   * density at takeoff [slugs/ft^3]
+   * density [slugs/ft^3]
    */
-  densityAtTakeoff: number,
+  density: number,
 }
 
 export interface SustainedTurnConstraint {
@@ -54,17 +54,17 @@ export interface ClimbRateConstraint {
    */
   verticalSpeed: number,
   /**
-   * cruise speed [ft/s]
+   * airspeed for best rate of climb [ft/s]
    */
-  cruiseSpeed: number,
+  airspeed: number,
   /**
    * minimum drag coefficient [dimensionless]
    */
   minDragCoeff: number,
   /**
-   * lift induced drag
+   * lift induced drag constant [dimensionless]
    */
-  liftInducedDragCoeff: number,
+  liftInducedDragConst: number,
 }
 
 export interface ClimbAngleConstraint {

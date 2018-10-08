@@ -74,7 +74,7 @@ export default class ConstraintsGraph extends Vue {
     takeoffSpeedCoeff: 1.2,
     liftCoefficientTakeoff: 2.9,
     groundRun: 1200, // ft
-    densityAtTakeoff: 0.0023768924, // slugs/ft^3
+    density: 0.0023768924, // slugs/ft^3
   }
 
   /**
@@ -93,9 +93,9 @@ export default class ConstraintsGraph extends Vue {
   public climbRateConstraint: ClimbRateConstraint = {
     dynamicPressure: 59, // lb/ft^2
     minDragCoeff: 0.03,
-    liftInducedDragCoeff: 0.022,
+    liftInducedDragConst: 0.022,
     verticalSpeed: 20, // ft/s
-    cruiseSpeed: 220, // ft/s
+    airspeed: 220, // ft/s
   }
 
   /**
@@ -155,12 +155,19 @@ export default class ConstraintsGraph extends Vue {
   get chartData(): (string | number | null | object)[][] {
     const google = loadGoogleCharts('current', { packages: ['corechart'] });
     const header = [
-      { label: 'Wing loading', type: 'number' }, { label: 'Takeoff run', type: 'number' },
-      { label: 'Sustained turn', type: 'number' }, { label: 'Climb rate', type: 'number' },
-      { label: 'Climb angle', type: 'number' },
-      // separate series for optimum point annotation
+      { label: 'Wing loading', type: 'number' },
+      // separate series for example aircraft and optimum point annotations
       { type: 'number' }, { type: 'string', role: 'annotation' },
       { type: 'string', role: 'annotationText', p: { html: true } },
+      // constraint series
+      { label: 'Takeoff run', type: 'number' }, { label: 'Sustained turn', type: 'number' },
+      { label: 'Climb rate', type: 'number' }, { label: 'Climb angle', type: 'number' },
+      { label: 'Landing distance', type: 'number' },
+    ];
+    const exampleAircraft = [
+      ['24', '.35', 'Aircraft A', 'Aircraft A is a ...', null, null, null, null, null, null],
+      ['21', '.27', 'Aircraft B', 'Aircraft B is a ...', null, null, null, null, null, null],
+      ['30', '.19', 'Aircraft C', 'Aircraft C is a ...', null, null, null, null, null, null],
     ];
     const rows = this.xAxis.map((wingLoading) => {
       const thrustToWeightRatios = this.constraintFunctions.map(constraint =>
@@ -175,12 +182,12 @@ export default class ConstraintsGraph extends Vue {
       }
       return [
         wingLoading,
-        ...thrustToWeightRatios,
         optimumPoint,
         annotation,
-        annotationText];
+        annotationText,
+        ...thrustToWeightRatios];
     });
-    const data = [header, ...rows];
+    const data = [header, ...exampleAircraft, ...rows];
     return data;
   }
 
@@ -204,7 +211,8 @@ export default class ConstraintsGraph extends Vue {
       tooltip: { isHtml: true },
       seriesType: 'area',
       series: {
-        4: { visibleInLegend: false },
+        0: { visibleInLegend: false, type: 'line', lineWidth: 0 },
+        5: { type: 'steppedArea' },
       },
       hAxis: {
         title: 'W/S',
@@ -233,6 +241,7 @@ export default class ConstraintsGraph extends Vue {
     this.sustainedTurn,
     this.climbRate,
     this.climbAngle,
+    this.landingDistance,
   ];
 
   /**
@@ -245,7 +254,7 @@ export default class ConstraintsGraph extends Vue {
     const a = this.takeoffRunConstraint.thrustFraction;
     const k = this.takeoffRunConstraint.takeoffSpeedCoeff;
     const Sg = this.takeoffRunConstraint.groundRun;
-    const rho = this.takeoffRunConstraint.densityAtTakeoff;
+    const rho = this.takeoffRunConstraint.density;
     const CL = this.takeoffRunConstraint.liftCoefficientTakeoff;
     return ((b**2) / a) * ((k**2) / (Sg * rho * 32.2 * CL)) * wingLoading;
   }
@@ -271,9 +280,9 @@ export default class ConstraintsGraph extends Vue {
   public climbRate(wingLoading: number): number {
     const q = this.climbRateConstraint.dynamicPressure;
     const Vv = this.climbRateConstraint.verticalSpeed;
-    const V = this.climbRateConstraint.cruiseSpeed;
+    const V = this.climbRateConstraint.airspeed;
     const CDmin = this.climbRateConstraint.minDragCoeff;
-    const CDinduced = this.climbRateConstraint.liftInducedDragCoeff;
+    const CDinduced = this.climbRateConstraint.liftInducedDragConst;
     return (Vv / V) + ((q / wingLoading) * CDmin) + ((CDinduced / q) * wingLoading);
   }
 
@@ -291,6 +300,19 @@ export default class ConstraintsGraph extends Vue {
     const theta = this.climbAngleConstraint.climbAngle * (Math.PI / 180);
     return (b / a) * ((k * (b / q) * wingLoading) + (CDmin / ((b / q) * wingLoading))
       + Math.sin(theta));
+  }
+
+  /**
+   * Thrust to weight ratio for the landing distance
+   * @param {number} wingLoading the wing loading (W_TO)/S
+   * @return {number} thrust to weight ratio
+   */
+  public landingDistance(wingLoading: number): number | null {
+    const landingDistance = this.xAxis[360];
+    if (wingLoading >= landingDistance) {
+      return 999;
+    }
+    return null;
   }
 }
 </script>
