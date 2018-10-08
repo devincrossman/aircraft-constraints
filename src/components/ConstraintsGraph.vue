@@ -17,141 +17,14 @@
             <option value="editClimbRate">Climb rate</option>
             <option value="editClimbAngle">Climb angle</option>
           </select>
-          <fieldset v-show="editWhichConstraint === 'editTakeoffRun'">
-            <legend>Takeoff run</legend>
-            <Equation data="$$\frac{T_{TO}}{W_{TO}} = \frac{\beta^2}{\alpha} \cdot
-              \frac{k_{TO}^2}{s_G\cdot\rho_{TO} \cdot g_0\cdot C_{L_{TO}}}\cdot
-              \frac{W_{TO}}{S}$$"/>
-            <label><Equation data="$\beta$" title="Weight fraction"/>
-              <input type="range" min="0" max="1" step=".05"
-                v-model.number="takeoffRunConstraint.weightFraction"/>
-              <input v-model.number="takeoffRunConstraint.weightFraction"/>
-            </label>
-            <label><Equation data="$\alpha$" title="Thrust fraction"/>
-              <input type="range" min="0" max="1" step=".05"
-                v-model.number="takeoffRunConstraint.thrustFraction"/>
-              <input v-model.number="takeoffRunConstraint.thrustFraction"/>
-            </label>
-            <label><Equation data="$k_{TO}$" title="Takeoff speed coefficient"/>
-              <input type="range" min="1" max="2" step="0.05"
-                v-model.number="takeoffRunConstraint.takeoffSpeedCoeff"/>
-              <input v-model.number="takeoffRunConstraint.takeoffSpeedCoeff"/>
-            </label>
-            <label><Equation data="$C_{L_{TO}}$" title="Takeoff lift coefficient"/>
-              <input type="range" min="0" max="3" step="0.05"
-                v-model.number="takeoffRunConstraint.liftCoefficientTakeoff"/>
-              <input v-model.number="takeoffRunConstraint.liftCoefficientTakeoff"/>
-            </label>
-            <label><Equation data="$s_{G}$" title="Ground run"/>
-              <input type="range" min="0" max="3000" step="100"
-                v-model.number="takeoffRunConstraint.groundRun"/>
-              <span><input v-model.number="takeoffRunConstraint.groundRun"/>
-              <Equation data="$ft$"/></span>
-            </label>
-            <label><Equation data="$\rho_{TO}$" title="Density at takeoff"/>
-              <input type="range" min="0.0004" max=".003" step="0.0001"
-                v-model.number="takeoffRunConstraint.densityAtTakeoff"/>
-              <span><input v-model.number="takeoffRunConstraint.densityAtTakeoff"/>
-              <Equation data="$slugs/ft^3$"/></span>
-            </label>
-          </fieldset>
-          <fieldset v-show="editWhichConstraint === 'editSustainedTurn'">
-            <legend>Sustained turn</legend>
-            <Equation data="$$\frac{T_{TO}}{W_{TO}} = q\left[\frac{C_{D_{min}}}{(W_{TO}/S)}\right]
-              + k\left(\frac{n}{q}\right)^2\left(\frac{W_{TO}}{S}\right)$$"/>
-            <label><Equation data="$q$" title="Dynamic pressure"/>
-              <input type="range" min="0" max="1000" step=".1"
-                v-model.number="sustainedTurnConstraint.dynamicPressure"/>
-              <span><input v-model.number="sustainedTurnConstraint.dynamicPressure"/>
-              <Equation data="$lb/ft^2$"/></span>
-            </label>
-            <label><Equation data="$C_{D_{min}}$" title="Minimum drag coefficient"/>
-              <input type="range" min="0" max="0.05" step=".005"
-                v-model.number="sustainedTurnConstraint.minDragCoeff"/>
-              <input v-model.number="sustainedTurnConstraint.minDragCoeff"/>
-            </label>
-            <label><Equation data="$k$" title="Unknown Coefficient"/>
-              <input type="range" min="0" max="2" step="0.05"
-                v-model.number="sustainedTurnConstraint.unknownCoeff"/>
-              <input v-model.number="sustainedTurnConstraint.unknownCoeff"/>
-            </label>
-            <label><Equation data="$n$" title="Load factor"/>
-              <input type="range" min="0" max="2" step="0.05"
-                v-model.number="sustainedTurnConstraint.loadFactor"/>
-              <input v-model.number="sustainedTurnConstraint.loadFactor"/>
-            </label>
-          </fieldset>
-          <fieldset v-show="editWhichConstraint === 'editClimbRate'">
-            <legend>Climb rate</legend>
-            <Equation data="$$\frac{T_{TO}}{W_{TO}} = \frac{V_v}{V_{cruise}}+ \frac{q}{W_{TO}/S}
-              \cdot C_{D_{min}} + \frac{C_{D_{induced}}}{q}\cdot\frac{W_{TO}}{S}$$"/>
-            <label><Equation data="$q$" title="Dynamic pressure"/>
-              <input type="range" min="0" max="1000" step=".1"
-                v-model.number="climbRateConstraint.dynamicPressure"/>
-              <span><input v-model.number="climbRateConstraint.dynamicPressure"/>
-              <Equation data="$lb/ft^2$"/></span>
-            </label>
-            <label><Equation data="$V_{v}$" title="Vertical speed"/>
-              <input type="range" min="0" max="40" step="1"
-                v-model.number="climbRateConstraint.verticalSpeed"/>
-              <span><input v-model.number="climbRateConstraint.verticalSpeed"/>
-              <Equation data="$ft/s$"/></span>
-            </label>
-            <label><Equation data="$V_{cruise}$" title="Cruise speed"/>
-              <input type="range" min="0" max="500" step="10"
-                v-model.number="climbRateConstraint.cruiseSpeed"/>
-              <span><input v-model.number="climbRateConstraint.cruiseSpeed"/>
-              <Equation data="$ft/s$"/></span>
-            </label>
-            <label><Equation data="$C_{D_{min}}$" title="Minimum drag coefficient"/>
-              <input type="range" min="0" max="0.05" step=".005"
-                v-model.number="climbRateConstraint.minDragCoeff"/>
-              <input v-model.number="climbRateConstraint.minDragCoeff"/>
-            </label>
-            <label><Equation data="$C_{D_{induced}}$" title="Lift induced drag coefficient"/>
-              <input type="range" min="0" max="0.05" step=".005"
-                v-model.number="climbRateConstraint.liftInducedDragCoeff "/>
-              <input v-model.number="climbRateConstraint.liftInducedDragCoeff"/>
-            </label>
-          </fieldset>
-          <fieldset v-show="editWhichConstraint === 'editClimbAngle'">
-            <legend>Climb angle</legend>
-            <Equation data="$$\frac{T_{TO}}{W_{TO}} = \frac{\beta}{\alpha} \left[ k\left(
-              \frac{\beta W_{TO}}{qS}\right) + \frac{C_{D_{min}}}{\left(\frac{\beta W_{TO}}{qS}
-              \right)} + \sin\theta\right]$$"/>
-            <label><Equation data="$\beta$" title="Weight fraction"/>
-              <input type="range" min="0" max="1" step=".05"
-                v-model.number="climbAngleConstraint.weightFraction"/>
-              <input v-model.number="climbAngleConstraint.weightFraction"/>
-            </label>
-            <label><Equation data="$\alpha$" title="Thrust fraction"/>
-              <input type="range" min="0" max="1" step=".05"
-                v-model.number="climbAngleConstraint.thrustFraction"/>
-              <input v-model.number="climbAngleConstraint.thrustFraction"/>
-            </label>
-            <label><Equation data="$k$" title="Lift induced drag constant"/>
-              <input type="range" min="0" max="10" step=".1"
-                v-model.number="climbAngleConstraint.liftInducedDragConst"/>
-              <input v-model.number="climbAngleConstraint.liftInducedDragConst"/>
-            </label>
-            <label><Equation data="$q$" title="Dynamic pressure"/>
-              <input type="range" min="0" max="1000" step="1"
-                v-model.number="climbAngleConstraint.dynamicPressure"/>
-              <span><input v-model.number="climbAngleConstraint.dynamicPressure"/>
-              <Equation data="$lb/ft^2$"/></span>
-            </label>
-            <label><Equation data="$C_{D_{min}}$" title="Minimum drag coefficient"/>
-              <input type="range" min="0" max="0.05" step=".005"
-                v-model.number="climbAngleConstraint.minDragCoeff"/>
-              <input v-model.number="climbAngleConstraint.minDragCoeff"/>
-            </label>
-            <label><Equation data="$\theta$" title="Climb angle"/>
-              <input type="range" min="0" max="20" step=".1"
-                v-model.number="climbAngleConstraint.climbAngle "/>
-              <span><input v-model.number="climbAngleConstraint.climbAngle"/>
-              <Equation data="$\deg$"/></span>
-            </label>
-          </fieldset>
+          <TakeoffRunFields :constraint="takeoffRunConstraint"
+            v-show="editWhichConstraint === 'editTakeoffRun'"/>
+          <SustainedTurnFields :constraint="sustainedTurnConstraint"
+            v-show="editWhichConstraint === 'editSustainedTurn'"/>
+          <ClimbRateFields :constraint="climbRateConstraint"
+            v-show="editWhichConstraint === 'editClimbRate'"/>
+          <ClimbAngleFields :constraint="climbAngleConstraint"
+            v-show="editWhichConstraint === 'editClimbAngle'"/>
         </form>
       </div>
     </div>
@@ -161,18 +34,26 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { GChart, loadGoogleCharts } from 'vue-google-charts';
-import Equation from '@/components/Equation.vue';
 import {
   TakeoffRunConstraint,
   SustainedTurnConstraint,
   ClimbRateConstraint,
   ClimbAngleConstraint,
 } from '@/interfaces/constraints';
+import Equation from '@/components/Equation.vue';
+import TakeoffRunFields from '@/components/TakeoffRunFields.vue';
+import SustainedTurnFields from '@/components/SustainedTurnFields.vue';
+import ClimbRateFields from '@/components/ClimbRateFields.vue';
+import ClimbAngleFields from '@/components/ClimbAngleFields.vue';
 
 @Component({
   components: {
   GChart,
-  Equation
+  Equation,
+  TakeoffRunFields,
+  SustainedTurnFields,
+  ClimbRateFields,
+  ClimbAngleFields,
   }
   })
 export default class ConstraintsGraph extends Vue {
@@ -238,17 +119,6 @@ export default class ConstraintsGraph extends Vue {
    * the values for the x-axis
    */
   private xAxis = Array.from({ length: 500 }, (v, k) => (k+1) / 10);
-
-  /**
-   * an array of constraint functions that calculate the thrust to weight ratio
-   * and take the wing loading (W_TO)/S as an input paramater
-   */
-  private constraintFunctions = [
-    this.takeoffRun,
-    this.sustainedTurn,
-    this.climbRate,
-    this.climbAngle,
-  ]
 
   /**
    * the minimum thrust to weight ratio
@@ -355,6 +225,17 @@ export default class ConstraintsGraph extends Vue {
   }
 
   /**
+   * an array of constraint functions that calculate the thrust to weight ratio
+   * and take the wing loading (W_TO)/S as an input paramater
+   */
+  private constraintFunctions = [
+    this.takeoffRun,
+    this.sustainedTurn,
+    this.climbRate,
+    this.climbAngle,
+  ];
+
+  /**
    * Thrust to weight ratio for take off run as a function of wing loading
    * @param {number} wingLoading the wing loading (W_TO)/S [lbf/ft^2]
    * @returns {number} thrust to weight ratio
@@ -414,7 +295,7 @@ export default class ConstraintsGraph extends Vue {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
   $desktopWidth: 1325px;
   #constraints-graph-ui {
     display: flex;
