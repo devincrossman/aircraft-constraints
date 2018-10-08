@@ -165,9 +165,9 @@ export default class ConstraintsGraph extends Vue {
       { label: 'Landing distance', type: 'number' },
     ];
     const exampleAircraft = [
-      ['24', '.35', 'Aircraft A', 'Aircraft A is a ...', null, null, null, null, null, null],
-      ['21', '.27', 'Aircraft B', 'Aircraft B is a ...', null, null, null, null, null, null],
-      ['30', '.19', 'Aircraft C', 'Aircraft C is a ...', null, null, null, null, null, null],
+      ['24', '.35', 'Aircraft A', 'Aircraft A is a ...', null, null, null, null, null],
+      ['21', '.27', 'Aircraft B', 'Aircraft B is a ...', null, null, null, null, null],
+      ['30', '.19', 'Aircraft C', 'Aircraft C is a ...', null, null, null, null, null],
     ];
     const rows = this.xAxis.map((wingLoading) => {
       const thrustToWeightRatios = this.constraintFunctions.map(constraint =>
