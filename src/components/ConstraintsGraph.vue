@@ -5,7 +5,7 @@
       <div id="chart" v-if="isOnline">
         <GChart type="ComboChart" :data="chartData" :options="chartOptions"/>
         <label>Ymin: <input v-model.number="ymin"/></label><br>
-        <label>Ymax: <input v-model.number="ymax"/></label>
+        <label>Ymax: <input v-model.number="ymax"/></label><br>
       </div>
       <div v-else>Charts are not available offline</div>
       <div id="inputs">
@@ -16,6 +16,10 @@
             <option value="editSustainedTurn">Sustained turn</option>
             <option value="editClimbRate">Climb rate</option>
             <option value="editClimbAngle">Climb angle</option>
+            <option value="editLandingDistance">Landing distance</option>
+            <option value="editStallSpeed">Stall speed</option>
+            <option value="editServiceCeiling">Service ceiling</option>
+            <option value="editCruiseSpeed">Cruise speed</option>
           </select>
           <TakeoffRunFields :constraint="takeoffRunConstraint"
             v-show="editWhichConstraint === 'editTakeoffRun'"/>
@@ -25,6 +29,14 @@
             v-show="editWhichConstraint === 'editClimbRate'"/>
           <ClimbAngleFields :constraint="climbAngleConstraint"
             v-show="editWhichConstraint === 'editClimbAngle'"/>
+          <LandingDistanceFields :constraint="landingDistanceConstraint"
+            v-show="editWhichConstraint === 'editLandingDistance'"/>
+          <StallSpeedFields :constraint="stallSpeedConstraint"
+            v-show="editWhichConstraint === 'editStallSpeed'"/>
+          <ServiceCeilingFields :constraint="serviceCeilingConstraint"
+            v-show="editWhichConstraint === 'editServiceCeiling'"/>
+          <CruiseSpeedFields :constraint="cruiseSpeedConstraint"
+            v-show="editWhichConstraint === 'editCruiseSpeed'"/>
         </form>
       </div>
     </div>
@@ -39,12 +51,20 @@ import {
   SustainedTurnConstraint,
   ClimbRateConstraint,
   ClimbAngleConstraint,
+  LandingDistanceConstraint,
+  StallSpeedConstraint,
+  ServiceCeilingConstraint,
+  CruiseSpeedConstraint,
 } from '@/interfaces/constraints';
 import Equation from '@/components/Equation.vue';
 import TakeoffRunFields from '@/components/TakeoffRunFields.vue';
 import SustainedTurnFields from '@/components/SustainedTurnFields.vue';
 import ClimbRateFields from '@/components/ClimbRateFields.vue';
 import ClimbAngleFields from '@/components/ClimbAngleFields.vue';
+import LandingDistanceFields from '@/components/LandingDistanceFields.vue';
+import StallSpeedFields from '@/components/StallSpeedFields.vue';
+import ServiceCeilingFields from '@/components/ServiceCeilingFields.vue';
+import CruiseSpeedFields from '@/components/CruiseSpeedFields.vue';
 
 @Component({
   components: {
@@ -54,6 +74,10 @@ import ClimbAngleFields from '@/components/ClimbAngleFields.vue';
   SustainedTurnFields,
   ClimbRateFields,
   ClimbAngleFields,
+  LandingDistanceFields,
+  StallSpeedFields,
+  ServiceCeilingFields,
+  CruiseSpeedFields,
   }
   })
 export default class ConstraintsGraph extends Vue {
@@ -81,19 +105,19 @@ export default class ConstraintsGraph extends Vue {
    * data fields for sustained turn constraint
    */
   public sustainedTurnConstraint: SustainedTurnConstraint = {
-    dynamicPressure: 59, // lb/ft^2
-    minDragCoeff: 0.03,
-    loadFactor: 1.41,
-    unknownCoeff: 0.045,
+    dynamicPressure: 63.9698, // lb/ft^2
+    minDragCoeff: 0.024,
+    loadFactor: 1.4142,
+    liftInducedDragConst: 0.0396,
   }
 
   /**
    * data fields for sustained turn constraint
    */
   public climbRateConstraint: ClimbRateConstraint = {
-    dynamicPressure: 59, // lb/ft^2
+    dynamicPressure: 16, // lb/ft^2
     minDragCoeff: 0.03,
-    liftInducedDragConst: 0.022,
+    liftInducedDragConst: 0.0396,
     verticalSpeed: 20, // ft/s
     airspeed: 220, // ft/s
   }
@@ -104,10 +128,63 @@ export default class ConstraintsGraph extends Vue {
   public climbAngleConstraint: ClimbAngleConstraint = {
     weightFraction: 1,
     thrustFraction: 1,
-    liftInducedDragConst: 0.022,
+    liftInducedDragConst: 0.0396,
     dynamicPressure: 59,
     minDragCoeff: 0.03,
     climbAngle: 3.1,
+  }
+
+  /**
+   * data fields for landing distance
+   */
+  public landingDistanceConstraint: LandingDistanceConstraint = {
+    density: 0.0023768924, // slug/ft^3
+    landingDistance: 2500, // ft
+    liftCoefficient: 2.5,
+    weightFraction: 0.94,
+  }
+
+  /**
+   * data fields for stall speed
+   */
+  public stallSpeedConstraint: StallSpeedConstraint = {
+    density: 0.0023768924, // slug/ft^3
+    velocity: 113, // ft/s
+    liftCoefficient: 2.5,
+  }
+
+  /**
+   * data fields for service ceiling
+   */
+  public serviceCeilingConstraint: ServiceCeilingConstraint = {
+    verticalSpeed: 1.667, // ft/s
+    density: 0.0023768924, // slug/ft^3
+    liftInducedDragConst: 0.03832985835,
+    minDragCoeff: 0.03,
+  }
+
+  /**
+   * data fields for cruise speed
+   */
+  public cruiseSpeedConstraint: CruiseSpeedConstraint = {
+    liftInducedDragConst: 0.03832985835,
+    minDragCoeff: 0.03,
+    dynamicPressure: 63.9698, // lb/ft^2
+  }
+
+  get stallSpeedWingLoading(): number {
+    const rho = this.stallSpeedConstraint.density;
+    const V = this.stallSpeedConstraint.velocity;
+    const CLmax = this.stallSpeedConstraint.liftCoefficient;
+    return 0.5 * rho * (V**2) * CLmax;
+  }
+
+  get landingDistanceWingLoading(): number {
+    const b = this.landingDistanceConstraint.weightFraction;
+    const rho = this.landingDistanceConstraint.density;
+    const CLmax = this.landingDistanceConstraint.liftCoefficient;
+    const SL = this.landingDistanceConstraint.landingDistance;
+    return 2.889 * (1 / b) * rho * CLmax * SL;
   }
 
   /**
@@ -118,7 +195,7 @@ export default class ConstraintsGraph extends Vue {
   /**
    * the values for the x-axis
    */
-  private xAxis = Array.from({ length: 500 }, (v, k) => (k+1) / 10);
+  private xAxis = Array.from({ length: 1300 }, (v, k) => (k+1) / 10);
 
   /**
    * the minimum thrust to weight ratio
@@ -162,12 +239,14 @@ export default class ConstraintsGraph extends Vue {
       // constraint series
       { label: 'Takeoff run', type: 'number' }, { label: 'Sustained turn', type: 'number' },
       { label: 'Climb rate', type: 'number' }, { label: 'Climb angle', type: 'number' },
-      { label: 'Landing distance', type: 'number' },
+      { label: 'Landing distance', type: 'number' }, { label: 'Stall speed', type: 'number' },
+      { label: 'Service ceiling', type: 'number' }, { label: 'Cruise speed', type: 'number' },
     ];
     const exampleAircraft = [
-      ['24', '.35', 'Aircraft A', 'Aircraft A is a ...', null, null, null, null, null],
-      ['21', '.27', 'Aircraft B', 'Aircraft B is a ...', null, null, null, null, null],
-      ['30', '.19', 'Aircraft C', 'Aircraft C is a ...', null, null, null, null, null],
+      ['121', '.2884', '737-300', 'Aircraft A is a ...', null, null, null, null, null, null, null, null],
+      ['62.83', '.212', 'ATR-300', 'Aircraft B is a ...', null, null, null, null, null, null, null, null],
+      ['71.07', '.221', 'Q300-8', 'Aircraft C is a ...', null, null, null, null, null, null, null, null],
+      ['52.06', '.3708', 'DHC-5', 'Aircraft C is a ...', null, null, null, null, null, null, null, null],
     ];
     const rows = this.xAxis.map((wingLoading) => {
       const thrustToWeightRatios = this.constraintFunctions.map(constraint =>
@@ -242,6 +321,9 @@ export default class ConstraintsGraph extends Vue {
     this.climbRate,
     this.climbAngle,
     this.landingDistance,
+    this.stallSpeed,
+    this.serviceCeiling,
+    this.cruiseSpeed,
   ];
 
   /**
@@ -268,7 +350,7 @@ export default class ConstraintsGraph extends Vue {
     const q = this.sustainedTurnConstraint.dynamicPressure;
     const n = this.sustainedTurnConstraint.loadFactor;
     const CDmin = this.sustainedTurnConstraint.minDragCoeff;
-    const k = this.sustainedTurnConstraint.unknownCoeff;
+    const k = this.sustainedTurnConstraint.liftInducedDragConst;
     return q * ((CDmin / wingLoading) + (k * ((n / q)**2) * wingLoading));
   }
 
@@ -303,16 +385,55 @@ export default class ConstraintsGraph extends Vue {
   }
 
   /**
-   * Thrust to weight ratio for the landing distance
+   * plot the stall speed by returning a high thrust to weight ratio
+   * when wing loading is equal or greater than the stall speed wing loading
+   * @param {number} wingLoading the wing loading (W_TO)/S
+   * @return {number} thrust to weight ratio
+   */
+  public stallSpeed(wingLoading: number): number | null {
+    if (wingLoading >= this.stallSpeedWingLoading) {
+      return 999;
+    }
+    return null;
+  }
+
+  /**
+   * plot the landing distance by returning a high thrust to weight ratio
+   * when wing loading is equal or greater than the landing distance wing loading
    * @param {number} wingLoading the wing loading (W_TO)/S
    * @return {number} thrust to weight ratio
    */
   public landingDistance(wingLoading: number): number | null {
-    const landingDistance = this.xAxis[360];
-    if (wingLoading >= landingDistance) {
+    if (wingLoading >= this.landingDistanceWingLoading) {
       return 999;
     }
     return null;
+  }
+
+  /**
+   * Thrust to weight ratio for service ceiling
+   * @param {number} wingLoading the wing loading (W_TO)/S
+   * @return {number} thrust to weight ratio
+   */
+  public serviceCeiling(wingLoading: number): number {
+    const k = this.serviceCeilingConstraint.liftInducedDragConst;
+    const Vv = this.serviceCeilingConstraint.verticalSpeed;
+    const CDmin = this.serviceCeilingConstraint.minDragCoeff;
+    const rho = this.serviceCeilingConstraint.density;
+    return (Vv / Math.sqrt(((2 * k)/(3 * rho * CDmin)) * wingLoading))
+      + (4 * Math.sqrt((k * CDmin) / 3));
+  }
+
+  /**
+   * Thrust to weight ratio for service ceiling
+   * @param {number} wingLoading the wing loading (W_TO)/S
+   * @return {number} thrust to weight ratio
+   */
+  public cruiseSpeed(wingLoading: number): number {
+    const k = this.cruiseSpeedConstraint.liftInducedDragConst;
+    const CDmin = this.cruiseSpeedConstraint.minDragCoeff;
+    const q = this.cruiseSpeedConstraint.dynamicPressure;
+    return ((q * CDmin) / (wingLoading)) + ((k * wingLoading) / q);
   }
 }
 </script>

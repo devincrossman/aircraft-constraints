@@ -17,8 +17,8 @@
     </label>
     <label><Equation data="$V$" title="airspeed"/>
       <input type="range" min="0" max="500" step="10"
-        v-model.number="constraint.cruiseSpeed"/>
-      <span><input v-model.number="constraint.cruiseSpeed"/>
+        v-model.number="constraint.airspeed"/>
+      <span><input v-model.number="constraint.airspeed"/>
       <Equation data="$ft/s$"/></span>
     </label>
     <label><Equation data="$C_{D_{min}}$" title="Minimum drag coefficient"/>

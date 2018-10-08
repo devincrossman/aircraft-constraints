@@ -14,10 +14,10 @@
         v-model.number="constraint.minDragCoeff"/>
       <input v-model.number="constraint.minDragCoeff"/>
     </label>
-    <label><Equation data="$k$" title="Unknown Coefficient"/>
+    <label><Equation data="$k$" title="lift induced drag constant"/>
       <input type="range" min="0" max="2" step="0.05"
-        v-model.number="constraint.unknownCoeff"/>
-      <input v-model.number="constraint.unknownCoeff"/>
+        v-model.number="constraint.liftInducedDragConst"/>
+      <input v-model.number="constraint.liftInducedDragConst"/>
     </label>
     <label><Equation data="$n$" title="Load factor"/>
       <input type="range" min="0" max="2" step="0.05"
