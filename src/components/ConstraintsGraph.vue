@@ -22,22 +22,40 @@
             <option value="editServiceCeiling">Service ceiling</option>
             <option value="editCruiseSpeed">Cruise speed</option>
           </select>
-          <TakeoffRunFields :constraint="takeoffRunConstraint"
-            v-show="editWhichConstraint === 'editTakeoffRun'"/>
-          <SustainedTurnFields :constraint="sustainedTurnConstraint"
-            v-show="editWhichConstraint === 'editSustainedTurn'"/>
-          <ClimbRateFields :constraint="climbRateConstraint"
-            v-show="editWhichConstraint === 'editClimbRate'"/>
-          <ClimbAngleFields :constraint="climbAngleConstraint"
-            v-show="editWhichConstraint === 'editClimbAngle'"/>
-          <LandingDistanceFields :constraint="landingDistanceConstraint"
-            v-show="editWhichConstraint === 'editLandingDistance'"/>
-          <StallSpeedFields :constraint="stallSpeedConstraint"
-            v-show="editWhichConstraint === 'editStallSpeed'"/>
-          <ServiceCeilingFields :constraint="serviceCeilingConstraint"
-            v-show="editWhichConstraint === 'editServiceCeiling'"/>
-          <CruiseSpeedFields :constraint="cruiseSpeedConstraint"
-            v-show="editWhichConstraint === 'editCruiseSpeed'"/>
+          <div id="constraint-form-fields">
+            <transition name="slide-fade">
+              <TakeoffRunFields :constraint="takeoffRunConstraint"
+                v-show="editWhichConstraint === 'editTakeoffRun'"/>
+            </transition>
+            <transition name="slide-fade">
+              <SustainedTurnFields :constraint="sustainedTurnConstraint"
+                v-show="editWhichConstraint === 'editSustainedTurn'"/>
+            </transition>
+            <transition name="slide-fade">
+              <ClimbRateFields :constraint="climbRateConstraint"
+                v-show="editWhichConstraint === 'editClimbRate'"/>
+            </transition>
+            <transition name="slide-fade">
+              <ClimbAngleFields :constraint="climbAngleConstraint"
+                v-show="editWhichConstraint === 'editClimbAngle'"/>
+            </transition>
+            <transition name="slide-fade">
+              <LandingDistanceFields :constraint="landingDistanceConstraint"
+                v-show="editWhichConstraint === 'editLandingDistance'"/>
+            </transition>
+            <transition name="slide-fade">
+              <StallSpeedFields :constraint="stallSpeedConstraint"
+                v-show="editWhichConstraint === 'editStallSpeed'"/>
+            </transition>
+            <transition name="slide-fade">
+              <ServiceCeilingFields :constraint="serviceCeilingConstraint"
+                v-show="editWhichConstraint === 'editServiceCeiling'"/>
+            </transition>
+            <transition name="slide-fade">
+              <CruiseSpeedFields :constraint="cruiseSpeedConstraint"
+                v-show="editWhichConstraint === 'editCruiseSpeed'"/>
+            </transition>
+          </div>
         </form>
       </div>
     </div>
@@ -549,6 +567,20 @@ export default class ConstraintsGraph extends Vue {
 
 <style lang="scss">
   $desktopWidth: 1325px;
+
+  .slide-fade-enter-active, .slide-fade-leave-active {
+    transition: all .5s;
+  }
+  .slide-fade-enter, .slide-fade-leave-to {
+    opacity: 0;
+  }
+  .slide-fade-enter {
+    transform: translateX(10em);
+  }
+  .slide-fade-leave-to {
+    transform: translateX(-10em);
+  }
+
   #constraints-graph-ui {
     display: flex;
     flex-wrap: wrap;
@@ -577,6 +609,20 @@ export default class ConstraintsGraph extends Vue {
       order: -1;
     }
   }
+
+  #constraint-form-fields {
+    position: relative;
+
+    & > div {
+      position: absolute;
+      left: 50%;
+    }
+    fieldset {
+      position: relative;
+      left: -50%;
+    }
+  }
+
   #constraint-form {
     display: flex;
     flex-direction: column;

@@ -1,5 +1,5 @@
 # aircraft-constraints
-wip constraints analysis tool for aircraft design
+wip constraint analysis tool for aircraft design [Demo](https://constraints.devincrossman.com)
 
 ## Project setup
 ```

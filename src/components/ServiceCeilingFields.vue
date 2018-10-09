@@ -1,31 +1,33 @@
 <template>
-  <fieldset>
-    <legend>Service ceiling</legend>
-    <Equation data="$$\frac{W_{TO}}{S} = \frac{V_v}{\sqrt{\frac{2k}{3\rho C_{D_{min}}}
-      \cdot\frac{W_{TO}}{S}}} + 4\sqrt{\frac{k\cdot C_{D_{min}}}{3}}$$"/>
-    <label><Equation data="$\rho$" title="Density"/>
-      <input type="range" min="0.0004" max=".003" step="0.0001"
-        v-model.number="constraint.density"/>
-      <span><input v-model.number="constraint.density"/>
-      <Equation data="$slugs/ft^3$"/></span>
-    </label>
-    <label><Equation data="$C_{D_{min}}$" title="Minimum drag coefficient"/>
-      <input type="range" min="0" max="0.05" step=".005"
-        v-model.number="constraint.minDragCoeff"/>
-      <input v-model.number="constraint.minDragCoeff"/>
-    </label>
-    <label><Equation data="$k$" title="Lift induced drag constant"/>
-      <input type="range" min="0" max="0.05" step=".005"
-        v-model.number="constraint.liftInducedDragConst "/>
-      <input v-model.number="constraint.liftInducedDragConst"/>
-    </label>
-    <label><Equation data="$V_{v}$" title="Vertical speed"/>
-      <input type="range" min="0" max="40" step="1"
-        v-model.number="constraint.verticalSpeed"/>
-      <span><input v-model.number="constraint.verticalSpeed"/>
-      <Equation data="$ft/s$"/></span>
-    </label>
-  </fieldset>
+  <div>
+    <fieldset>
+      <legend>Service ceiling</legend>
+      <Equation data="$$\frac{W_{TO}}{S} = \frac{V_v}{\sqrt{\frac{2k}{3\rho C_{D_{min}}}
+        \cdot\frac{W_{TO}}{S}}} + 4\sqrt{\frac{k\cdot C_{D_{min}}}{3}}$$"/>
+      <label><Equation data="$\rho$" title="Density"/>
+        <input type="range" min="0.0004" max=".003" step="0.0001"
+          v-model.number="constraint.density"/>
+        <span><input v-model.number="constraint.density"/>
+        <Equation data="$slugs/ft^3$"/></span>
+      </label>
+      <label><Equation data="$C_{D_{min}}$" title="Minimum drag coefficient"/>
+        <input type="range" min="0" max="0.05" step=".005"
+          v-model.number="constraint.minDragCoeff"/>
+        <input v-model.number="constraint.minDragCoeff"/>
+      </label>
+      <label><Equation data="$k$" title="Lift induced drag constant"/>
+        <input type="range" min="0" max="0.05" step=".005"
+          v-model.number="constraint.liftInducedDragConst "/>
+        <input v-model.number="constraint.liftInducedDragConst"/>
+      </label>
+      <label><Equation data="$V_{v}$" title="Vertical speed"/>
+        <input type="range" min="0" max="40" step="1"
+          v-model.number="constraint.verticalSpeed"/>
+        <span><input v-model.number="constraint.verticalSpeed"/>
+        <Equation data="$ft/s$"/></span>
+      </label>
+    </fieldset>
+  </div>
 </template>
 
 <script lang="ts">
