@@ -4,8 +4,9 @@
     <div id="constraints-graph-ui">
       <div id="chart" v-if="isOnline">
         <GChart type="ComboChart" :data="chartData" :options="chartOptions"/>
-        <label>Ymin: <input v-model.number="ymin"/></label><br>
-        <label>Ymax: <input v-model.number="ymax"/></label><br>
+        <label><Equation data="$W_{TO}$"/>: <input v-model.number="weight"/> lb</label><br>
+        <span>Thrust: {{thrust.toFixed(2)}} lb
+          Wing area: {{wingArea.toFixed(2)}} <Equation data="$ft^2$"/></span>
       </div>
       <div v-else>Charts are not available offline</div>
       <div id="inputs">
@@ -89,6 +90,24 @@ export default class ConstraintsGraph extends Vue {
     return window.navigator.onLine;
   }
 
+  /**
+   * the aircraft gross weight [lb]
+   */
+  public weight: number = 37500;
+
+  /**
+   * the thrust calculated using the optimum thrust to weight point
+   */
+  get thrust(): number {
+    return this.optThrustToWeight * this.weight;
+  }
+
+  /**
+   * the wing area calculated using the optimum thrust to weight point
+   */
+  get wingArea(): number {
+    return this.weight / this.wingLoadingAtOptThrustToWeight;
+  }
   /**
    * data fields for take off run constraint
    */
@@ -201,7 +220,7 @@ export default class ConstraintsGraph extends Vue {
   /**
    * the values for the x-axis
    */
-  private xAxis = Array.from({ length: 1300 }, (v, k) => (k+1) / 10);
+  private xAxis = [0.01, ...Array.from({ length: 260 }, (v, k) => (k+1) / 2)];
 
   /**
    * takes an index and returns the chart data for the constraint series at that index
@@ -224,9 +243,20 @@ export default class ConstraintsGraph extends Vue {
   /**
    * the minimum (optimal) thrust to weight ratio
    */
-  get minThrustToWeight(): number {
+  get optThrustToWeight(): number {
     return Math.min(...this.xAxis.map((wingLoading, index) =>
       Math.max(...this.aggregatedConstraintSeriesData(index))));
+  }
+
+  /**
+   * the wing loading corresponding to the optimal thrust to weight
+   */
+  get wingLoadingAtOptThrustToWeight(): number {
+    return this.xAxis.reduce((val, wingLoading, index) => {
+      const thrustToWeightRatios = this.aggregatedConstraintSeriesData(index);
+      return (Math.max(...thrustToWeightRatios) === this.optThrustToWeight) ?
+        wingLoading : val;
+    });
   }
 
   /**
@@ -303,25 +333,26 @@ export default class ConstraintsGraph extends Vue {
       { label: 'Landing distance', type: 'number' }, { label: 'Stall speed', type: 'number' },
       { label: 'Service ceiling', type: 'number' }, { label: 'Cruise speed', type: 'number' },
     ];
+    const numOfConstraintSeries = this.aggregatedConstraintSeriesData(0).length;
     const exampleAircraft = [
       ['121', '.2884', '737-300', 'T/W: 0.2884<br>W/S: 121',
-        ...(new Array(this.constraintFunctions.length)).fill(null)],
+        ...(new Array(numOfConstraintSeries)).fill(null)],
       ['62.83', '.212', 'ATR-300', 'T/W: 0.212<br>W/S: 62.83',
-        ...(new Array(this.constraintFunctions.length)).fill(null)],
+        ...(new Array(numOfConstraintSeries)).fill(null)],
       ['71.07', '.221', 'Q300-8', 'T/W: 0.221<br>W/S: 71.07',
-        ...(new Array(this.constraintFunctions.length)).fill(null)],
+        ...(new Array(numOfConstraintSeries)).fill(null)],
       ['52.06', '.3708', 'DHC-5', 'T/W: 0.3708<br>W/S: 52.06',
-        ...(new Array(this.constraintFunctions.length)).fill(null)],
+        ...(new Array(numOfConstraintSeries)).fill(null)],
     ];
     const rows = this.xAxis.map((wingLoading, index) => {
       const thrustToWeightRatios = this.aggregatedConstraintSeriesData(index);
       let optimumPoint = null;
       let annotation = null;
       let annotationText = null;
-      if (Math.max(...thrustToWeightRatios) === this.minThrustToWeight) {
-        optimumPoint = this.minThrustToWeight;
+      if (wingLoading === this.wingLoadingAtOptThrustToWeight) {
+        optimumPoint = this.optThrustToWeight;
         annotation = 'Optimum';
-        annotationText = `Optimum T/W: ${this.minThrustToWeight}<br>Optimum W/S: ${wingLoading}`;
+        annotationText = `Optimum T/W: ${this.optThrustToWeight}<br>Optimum W/S: ${wingLoading}`;
       }
       return [
         wingLoading,
@@ -375,21 +406,6 @@ export default class ConstraintsGraph extends Vue {
       },
     };
   }
-
-  /**
-   * an array of constraint functions that calculate the thrust to weight ratio
-   * and take the wing loading (W_TO)/S as an input paramater
-   */
-  private constraintFunctions = [
-    this.takeoffRun,
-    this.sustainedTurn,
-    this.climbRate,
-    this.climbAngle,
-    this.landingDistance,
-    this.stallSpeed,
-    this.serviceCeiling,
-    this.cruiseSpeed,
-  ];
 
   /**
    * Thrust to weight ratio for take off run as a function of wing loading
@@ -512,6 +528,7 @@ export default class ConstraintsGraph extends Vue {
 
   #chart {
     width:100%;
+    line-height: 2;
   }
 
   #inputs {
