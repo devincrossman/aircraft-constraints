@@ -111,7 +111,7 @@ export default class ConstraintsGraph extends Vue {
   /**
    * the aircraft gross weight [lb]
    */
-  public weight: number = 37500;
+  public weight: number = 27000;
 
   /**
    * the thrust calculated using the optimum thrust to weight point
@@ -176,7 +176,7 @@ export default class ConstraintsGraph extends Vue {
    */
   public landingDistanceConstraint: LandingDistanceConstraint = {
     density: 0.0023768924, // slug/ft^3
-    landingDistance: 2500, // ft
+    landingDistance: 1600, // ft
     liftCoefficient: 2.5,
     weightFraction: 0.94,
   }
@@ -186,7 +186,7 @@ export default class ConstraintsGraph extends Vue {
    */
   public stallSpeedConstraint: StallSpeedConstraint = {
     density: 0.0023768924, // slug/ft^3
-    velocity: 113, // ft/s
+    velocity: 120, // ft/s
     liftCoefficient: 2.5,
   }
 
