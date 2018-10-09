@@ -227,17 +227,39 @@ export default class ConstraintsGraph extends Vue {
    * @param {number} index the index of the chart data
    * @returns an array containing the chart data for each series at the given index
    */
-  private aggregatedConstraintSeriesData(index: number): number[] {
+  private constraintSeriesData(index: number): number[] {
     return ([
       this.takeoffRunChartData[index],
       this.sustainedTurnChartData[index],
       this.climbRateChartData[index],
       this.climbAngleChartData[index],
-      this.landingDistanceChartData[index],
-      this.stallSpeedChartData[index],
       this.serviceCeilingChartData[index],
       this.cruiseSpeedChartData[index],
+      this.stallSpeedChartData[index],
+      this.landingDistanceChartData[index],
     ] as number[]);
+  }
+
+  /**
+   * takes an index and returns an array of tooltips for each constraint series at that index
+   * @param {number} index the index of the chart data
+   * @returns an array containing the tooltip data for each series at the given index
+   */
+  private constraintSeriesTooltip(index: number): string[][] {
+    return [
+      ['Takeoff run', this.takeoffRunChartData[index]],
+      ['Sustained turn', this.sustainedTurnChartData[index]],
+      ['Climb rate', this.climbRateChartData[index]],
+      ['Climb angle', this.climbAngleChartData[index]],
+      ['Service ceiling', this.serviceCeilingChartData[index]],
+      ['Cruise speed', this.cruiseSpeedChartData[index]],
+    ].map(data =>
+      `<span>${data[0]}</span><br>T/W: ${(data[1] as number).toFixed(3)}
+      W/S: ${this.xAxis[index]}`)
+      .concat([`<span>Stall speed</span><br>
+      W/S: ${this.stallSpeedWingLoading.toFixed(2)}`])
+      .concat([`<span>Landing distance</span><br>
+      W/S: ${this.landingDistanceWingLoading.toFixed(2)}`]);
   }
 
   /**
@@ -245,7 +267,7 @@ export default class ConstraintsGraph extends Vue {
    */
   get optThrustToWeight(): number {
     return Math.min(...this.xAxis.map((wingLoading, index) =>
-      Math.max(...this.aggregatedConstraintSeriesData(index))));
+      Math.max(...this.constraintSeriesData(index))));
   }
 
   /**
@@ -253,7 +275,7 @@ export default class ConstraintsGraph extends Vue {
    */
   get wingLoadingAtOptThrustToWeight(): number {
     return this.xAxis.reduce((val, wingLoading, index) => {
-      const thrustToWeightRatios = this.aggregatedConstraintSeriesData(index);
+      const thrustToWeightRatios = this.constraintSeriesData(index);
       return (Math.max(...thrustToWeightRatios) === this.optThrustToWeight) ?
         wingLoading : val;
     });
@@ -328,24 +350,28 @@ export default class ConstraintsGraph extends Vue {
       { type: 'number' }, { type: 'string', role: 'annotation' },
       { type: 'string', role: 'annotationText', p: { html: true } },
       // constraint series
-      { label: 'Takeoff run', type: 'number' }, { label: 'Sustained turn', type: 'number' },
-      { label: 'Climb rate', type: 'number' }, { label: 'Climb angle', type: 'number' },
-      { label: 'Landing distance', type: 'number' }, { label: 'Stall speed', type: 'number' },
-      { label: 'Service ceiling', type: 'number' }, { label: 'Cruise speed', type: 'number' },
+      { label: 'Takeoff run', type: 'number' }, { type: 'string', role: 'tooltip', p: { html: true } },
+      { label: 'Sustained turn', type: 'number' }, { type: 'string', role: 'tooltip', p: { html: true } },
+      { label: 'Climb rate', type: 'number' }, { type: 'string', role: 'tooltip', p: { html: true } },
+      { label: 'Climb angle', type: 'number' }, { type: 'string', role: 'tooltip', p: { html: true } },
+      { label: 'Service ceiling', type: 'number' }, { type: 'string', role: 'tooltip', p: { html: true } },
+      { label: 'Cruise speed', type: 'number' }, { type: 'string', role: 'tooltip', p: { html: true } },
+      { label: 'Stall speed', type: 'number' }, { type: 'string', role: 'tooltip', p: { html: true } },
+      { label: 'Landing distance', type: 'number' }, { type: 'string', role: 'tooltip', p: { html: true } },
     ];
-    const numOfConstraintSeries = this.aggregatedConstraintSeriesData(0).length;
+    const numOfConstraintSeries = this.constraintSeriesData(0).length * 2;
     const exampleAircraft = [
-      ['121', '.2884', '737-300', 'T/W: 0.2884<br>W/S: 121',
+      ['121', '.2884', '737-300', '<span>737-300</span><br>T/W: 0.2884 W/S: 121',
         ...(new Array(numOfConstraintSeries)).fill(null)],
-      ['62.83', '.212', 'ATR-300', 'T/W: 0.212<br>W/S: 62.83',
+      ['62.83', '.212', 'ATR-300', '<span>ATR-300</span><br>T/W: 0.212 W/S: 62.83',
         ...(new Array(numOfConstraintSeries)).fill(null)],
-      ['71.07', '.221', 'Q300-8', 'T/W: 0.221<br>W/S: 71.07',
+      ['71.07', '.221', 'Q300-8', '<span>Q300-8</span><br>T/W: 0.221 W/S: 71.07',
         ...(new Array(numOfConstraintSeries)).fill(null)],
-      ['52.06', '.3708', 'DHC-5', 'T/W: 0.3708<br>W/S: 52.06',
+      ['52.06', '.3708', 'DHC-5', '<span>DHC-5</span><br>T/W: 0.3708 W/S: 52.06',
         ...(new Array(numOfConstraintSeries)).fill(null)],
     ];
     const rows = this.xAxis.map((wingLoading, index) => {
-      const thrustToWeightRatios = this.aggregatedConstraintSeriesData(index);
+      const thrustToWeightRatios = this.constraintSeriesData(index);
       let optimumPoint = null;
       let annotation = null;
       let annotationText = null;
@@ -354,12 +380,14 @@ export default class ConstraintsGraph extends Vue {
         annotation = 'Optimum';
         annotationText = `Optimum T/W: ${this.optThrustToWeight}<br>Optimum W/S: ${wingLoading}`;
       }
+      const combinedConstraintTooltipData = thrustToWeightRatios.map((data, i) =>
+        [data, this.constraintSeriesTooltip(index)[i]]).reduce((a, b) => a.concat(b));
       return [
         wingLoading,
         optimumPoint,
         annotation,
         annotationText,
-        ...thrustToWeightRatios];
+        ...combinedConstraintTooltipData];
     });
     const data = [header, ...exampleAircraft, ...rows];
     return data;
@@ -386,8 +414,8 @@ export default class ConstraintsGraph extends Vue {
       seriesType: 'area',
       series: {
         0: { visibleInLegend: false, type: 'line', lineWidth: 0 },
-        5: { type: 'steppedArea' },
-        6: { type: 'steppedArea' },
+        7: { type: 'steppedArea' },
+        8: { type: 'steppedArea' },
       },
       hAxis: {
         title: 'W/S',
@@ -529,6 +557,9 @@ export default class ConstraintsGraph extends Vue {
   #chart {
     width:100%;
     line-height: 2;
+    div.google-visualization-tooltip {
+      padding: 0 .5em;
+    }
   }
 
   #inputs {
