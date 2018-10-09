@@ -245,7 +245,7 @@ export default class ConstraintsGraph extends Vue {
    * @param {number} index the index of the chart data
    * @returns an array containing the tooltip data for each series at the given index
    */
-  private constraintSeriesTooltip(index: number): string[][] {
+  private constraintSeriesTooltip(index: number): string[] {
     return [
       ['Takeoff run', this.takeoffRunChartData[index]],
       ['Sustained turn', this.sustainedTurnChartData[index]],
