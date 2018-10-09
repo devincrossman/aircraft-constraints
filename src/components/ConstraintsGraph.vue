@@ -172,6 +172,9 @@ export default class ConstraintsGraph extends Vue {
     dynamicPressure: 63.9698, // lb/ft^2
   }
 
+  /**
+   * the wing loading as determined by the stall speed constraint
+   */
   get stallSpeedWingLoading(): number {
     const rho = this.stallSpeedConstraint.density;
     const V = this.stallSpeedConstraint.velocity;
@@ -179,6 +182,9 @@ export default class ConstraintsGraph extends Vue {
     return 0.5 * rho * (V**2) * CLmax;
   }
 
+  /**
+   * the wing loading as determined by the landing distance constraint
+   */
   get landingDistanceWingLoading(): number {
     const b = this.landingDistanceConstraint.weightFraction;
     const rho = this.landingDistanceConstraint.density;
@@ -198,30 +204,85 @@ export default class ConstraintsGraph extends Vue {
   private xAxis = Array.from({ length: 1300 }, (v, k) => (k+1) / 10);
 
   /**
-   * the minimum thrust to weight ratio
+   * takes an index and returns the chart data for the constraint series at that index
+   * @param {number} index the index of the chart data
+   * @returns an array containing the chart data for each series at the given index
+   */
+  private aggregatedConstraintSeriesData(index: number): number[] {
+    return ([
+      this.takeoffRunChartData[index],
+      this.sustainedTurnChartData[index],
+      this.climbRateChartData[index],
+      this.climbAngleChartData[index],
+      this.landingDistanceChartData[index],
+      this.stallSpeedChartData[index],
+      this.serviceCeilingChartData[index],
+      this.cruiseSpeedChartData[index],
+    ] as number[]);
+  }
+
+  /**
+   * the minimum (optimal) thrust to weight ratio
    */
   get minThrustToWeight(): number {
-    let minThrustToWeight: number = this.constraintFunctions.reduce(
-      (max, constraint) =>
-        (max > constraint.apply(this, [this.xAxis[0]]) ? max
-          : constraint.apply(this, [this.xAxis[0]]))
-      , 0,
-    );
-    let wingLoadingAtMinThrustToWeight: number = this.xAxis[0];
-    this.xAxis.forEach((wingLoading) => {
-      const minThrustToWeightAtThisWingLoading = this.constraintFunctions.reduce(
-        (max, constraint) =>
-          (max > constraint.apply(this, [wingLoading]) ? max
-            : constraint.apply(this, [wingLoading]))
-        , 0,
-      );
-      if (minThrustToWeightAtThisWingLoading < minThrustToWeight) {
-        minThrustToWeight = minThrustToWeightAtThisWingLoading;
-        wingLoadingAtMinThrustToWeight = wingLoading;
-      }
-      minThrustToWeight = Math.min(minThrustToWeight, minThrustToWeightAtThisWingLoading);
-    });
-    return minThrustToWeight;
+    return Math.min(...this.xAxis.map((wingLoading, index) =>
+      Math.max(...this.aggregatedConstraintSeriesData(index))));
+  }
+
+  /**
+   * the thrust to weight chart data for takeoff run
+   */
+  get takeoffRunChartData(): (number | null | string)[] {
+    return this.xAxis.map(wingLoading => this.takeoffRun(wingLoading));
+  }
+
+  /**
+   * the thrust to weight chart data for sustained turn
+   */
+  get sustainedTurnChartData(): (number | null | string)[] {
+    return this.xAxis.map(wingLoading => this.sustainedTurn(wingLoading));
+  }
+
+  /**
+   * the thrust to weight chart data for climb rate
+   */
+  get climbRateChartData(): (number | null | string)[] {
+    return this.xAxis.map(wingLoading => this.climbRate(wingLoading));
+  }
+
+  /**
+   * the thrust to weight chart data for climb angle
+   */
+  get climbAngleChartData(): (number | null | string)[] {
+    return this.xAxis.map(wingLoading => this.climbAngle(wingLoading));
+  }
+
+  /**
+   * the thrust to weight chart data for landing distance
+   */
+  get landingDistanceChartData(): (number | null | string)[] {
+    return this.xAxis.map(wingLoading => this.landingDistance(wingLoading));
+  }
+
+  /**
+   * the thrust to weight chart data for stall speed
+   */
+  get stallSpeedChartData(): (number | null | string)[] {
+    return this.xAxis.map(wingLoading => this.stallSpeed(wingLoading));
+  }
+
+  /**
+   * the thrust to weight chart data for service ceiling
+   */
+  get serviceCeilingChartData(): (number | null | string)[] {
+    return this.xAxis.map(wingLoading => this.serviceCeiling(wingLoading));
+  }
+
+  /**
+   * the thrust to weight chart data for cruise speed
+   */
+  get cruiseSpeedChartData(): (number | null | string)[] {
+    return this.xAxis.map(wingLoading => this.cruiseSpeed(wingLoading));
   }
 
   /**
@@ -243,14 +304,17 @@ export default class ConstraintsGraph extends Vue {
       { label: 'Service ceiling', type: 'number' }, { label: 'Cruise speed', type: 'number' },
     ];
     const exampleAircraft = [
-      ['121', '.2884', '737-300', 'Aircraft A is a ...', null, null, null, null, null, null, null, null],
-      ['62.83', '.212', 'ATR-300', 'Aircraft B is a ...', null, null, null, null, null, null, null, null],
-      ['71.07', '.221', 'Q300-8', 'Aircraft C is a ...', null, null, null, null, null, null, null, null],
-      ['52.06', '.3708', 'DHC-5', 'Aircraft C is a ...', null, null, null, null, null, null, null, null],
+      ['121', '.2884', '737-300', 'T/W: 0.2884<br>W/S: 121',
+        ...(new Array(this.constraintFunctions.length)).fill(null)],
+      ['62.83', '.212', 'ATR-300', 'T/W: 0.212<br>W/S: 62.83',
+        ...(new Array(this.constraintFunctions.length)).fill(null)],
+      ['71.07', '.221', 'Q300-8', 'T/W: 0.221<br>W/S: 71.07',
+        ...(new Array(this.constraintFunctions.length)).fill(null)],
+      ['52.06', '.3708', 'DHC-5', 'T/W: 0.3708<br>W/S: 52.06',
+        ...(new Array(this.constraintFunctions.length)).fill(null)],
     ];
-    const rows = this.xAxis.map((wingLoading) => {
-      const thrustToWeightRatios = this.constraintFunctions.map(constraint =>
-        constraint.apply(this, [wingLoading]));
+    const rows = this.xAxis.map((wingLoading, index) => {
+      const thrustToWeightRatios = this.aggregatedConstraintSeriesData(index);
       let optimumPoint = null;
       let annotation = null;
       let annotationText = null;
@@ -292,6 +356,7 @@ export default class ConstraintsGraph extends Vue {
       series: {
         0: { visibleInLegend: false, type: 'line', lineWidth: 0 },
         5: { type: 'steppedArea' },
+        6: { type: 'steppedArea' },
       },
       hAxis: {
         title: 'W/S',
