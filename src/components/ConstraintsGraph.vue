@@ -547,7 +547,7 @@ export default class ConstraintsGraph extends Vue {
     const Vv = this.serviceCeilingConstraint.verticalSpeed;
     const CDmin = this.serviceCeilingConstraint.minDragCoeff;
     const rho = this.serviceCeilingConstraint.density;
-    return (Vv / Math.sqrt(((2 * k)/(3 * rho * CDmin)) * wingLoading))
+    return (Vv / Math.sqrt(((2)/(rho)) * Math.sqrt(k/(3 * CDmin)) * wingLoading))
       + (4 * Math.sqrt((k * CDmin) / 3));
   }
 

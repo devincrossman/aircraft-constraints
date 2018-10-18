@@ -2,8 +2,8 @@
   <div>
     <fieldset>
       <legend>Sustained turn</legend>
-      <Equation data="$$\frac{T_{TO}}{W_{TO}} = q\left[\frac{C_{D_{min}}}{(W_{TO}/S)}\right]
-        + k\left(\frac{n}{q}\right)^2\left(\frac{W_{TO}}{S}\right)$$"/>
+      <Equation data="$$\frac{T_{TO}}{W_{TO}} = q\left[\frac{C_{D_{min}}}{(W_{TO}/S)}
+        + k\left(\frac{n}{q}\right)^2\left(\frac{W_{TO}}{S}\right)\right]$$"/>
       <label><Equation data="$q$" title="Dynamic pressure"/>
         <input type="range" min="0" max="1000" step=".1"
           v-model.number="constraint.dynamicPressure"/>
