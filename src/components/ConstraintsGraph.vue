@@ -130,11 +130,11 @@ export default class ConstraintsGraph extends Vue {
    * data fields for take off run constraint
    */
   public takeoffRunConstraint: TakeoffRunConstraint = {
-    weightFraction: 1,
+    weightFraction: 0.94,
     thrustFraction: 1,
-    takeoffSpeedCoeff: 1.2,
-    liftCoefficientTakeoff: 2.9,
-    groundRun: 1200, // ft
+    takeoffSpeedCoeff: 1.13,
+    liftCoefficientTakeoff: 2.6,
+    groundRun: 1500, // ft
     density: 0.0023768924, // slugs/ft^3
   }
 
@@ -142,19 +142,19 @@ export default class ConstraintsGraph extends Vue {
    * data fields for sustained turn constraint
    */
   public sustainedTurnConstraint: SustainedTurnConstraint = {
-    dynamicPressure: 63.9698, // lb/ft^2
-    minDragCoeff: 0.024,
+    dynamicPressure: 144.5, // lb/ft^2
+    minDragCoeff: 0.025,
     loadFactor: 1.4142,
-    liftInducedDragConst: 0.0396,
+    liftInducedDragConst: 0.035,
   }
 
   /**
    * data fields for sustained turn constraint
    */
   public climbRateConstraint: ClimbRateConstraint = {
-    dynamicPressure: 16, // lb/ft^2
-    minDragCoeff: 0.03,
-    liftInducedDragConst: 0.0396,
+    dynamicPressure: 59, // lb/ft^2
+    minDragCoeff: 0.025,
+    liftInducedDragConst: 0.035,
     verticalSpeed: 20, // ft/s
     airspeed: 220, // ft/s
   }
@@ -165,10 +165,10 @@ export default class ConstraintsGraph extends Vue {
   public climbAngleConstraint: ClimbAngleConstraint = {
     weightFraction: 1,
     thrustFraction: 1,
-    liftInducedDragConst: 0.0396,
-    dynamicPressure: 59,
-    minDragCoeff: 0.03,
-    climbAngle: 3.1,
+    liftInducedDragConst: 0.035,
+    dynamicPressure: 59, // lb/ft^2
+    minDragCoeff: 0.025,
+    climbAngle: 4.5, // deg
   }
 
   /**
@@ -176,9 +176,9 @@ export default class ConstraintsGraph extends Vue {
    */
   public landingDistanceConstraint: LandingDistanceConstraint = {
     density: 0.0023768924, // slug/ft^3
-    landingDistance: 1600, // ft
-    liftCoefficient: 2.5,
-    weightFraction: 0.94,
+    landingDistance: 1900, // ft
+    liftCoefficient: 3.15,
+    weightFraction: 0.9,
   }
 
   /**
@@ -186,7 +186,7 @@ export default class ConstraintsGraph extends Vue {
    */
   public stallSpeedConstraint: StallSpeedConstraint = {
     density: 0.0023768924, // slug/ft^3
-    velocity: 120, // ft/s
+    velocity: 200, // ft/s
     liftCoefficient: 2.5,
   }
 
@@ -196,17 +196,17 @@ export default class ConstraintsGraph extends Vue {
   public serviceCeilingConstraint: ServiceCeilingConstraint = {
     verticalSpeed: 1.667, // ft/s
     density: 0.0023768924, // slug/ft^3
-    liftInducedDragConst: 0.03832985835,
-    minDragCoeff: 0.03,
+    liftInducedDragConst: 0.035,
+    minDragCoeff: 0.025,
   }
 
   /**
    * data fields for cruise speed
    */
   public cruiseSpeedConstraint: CruiseSpeedConstraint = {
-    liftInducedDragConst: 0.03832985835,
-    minDragCoeff: 0.03,
-    dynamicPressure: 63.9698, // lb/ft^2
+    liftInducedDragConst: 0.035,
+    minDragCoeff: 0.025,
+    dynamicPressure: 144.5, // lb/ft^2
   }
 
   /**
