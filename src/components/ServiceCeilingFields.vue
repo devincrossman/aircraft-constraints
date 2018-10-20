@@ -2,8 +2,9 @@
   <div>
     <fieldset>
       <legend>Service ceiling</legend>
-      <Equation data="$$\frac{W_{TO}}{S} = \frac{V_v}{\sqrt{\frac{2}{\rho} \sqrt{\frac{k}{3C_{D_{min}}}}
-        \cdot\frac{W_{TO}}{S}}} + 4\sqrt{\frac{k\cdot C_{D_{min}}}{3}}$$"/>
+      <Equation data="$$\frac{W_{TO}}{S} = \frac{V_v}{\sqrt{\frac{2}{\rho}
+        \sqrt{\frac{k}{3C_{D_{min}}}} \cdot\frac{W_{TO}}{S}}}
+        + 4\sqrt{\frac{k\cdot C_{D_{min}}}{3}}$$"/>
       <label><Equation data="$\rho$" title="Density"/>
         <input type="range" min="0.0004" max=".003" step="0.0001"
           v-model.number="constraint.density"/>

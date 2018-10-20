@@ -152,11 +152,11 @@ export default class ConstraintsGraph extends Vue {
    * data fields for sustained turn constraint
    */
   public climbRateConstraint: ClimbRateConstraint = {
-    dynamicPressure: 59, // lb/ft^2
+    dynamicPressure: 49, // lb/ft^2
     minDragCoeff: 0.025,
     liftInducedDragConst: 0.035,
-    verticalSpeed: 20, // ft/s
-    airspeed: 220, // ft/s
+    verticalSpeed: 16.67, // ft/s
+    airspeed: 203, // ft/s
   }
 
   /**
@@ -166,9 +166,9 @@ export default class ConstraintsGraph extends Vue {
     weightFraction: 1,
     thrustFraction: 1,
     liftInducedDragConst: 0.035,
-    dynamicPressure: 59, // lb/ft^2
+    dynamicPressure: 49, // lb/ft^2
     minDragCoeff: 0.025,
-    climbAngle: 4.5, // deg
+    climbAngle: 4.7, // deg
   }
 
   /**
