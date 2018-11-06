@@ -4,9 +4,17 @@
     <div id="constraints-graph-ui">
       <div id="chart" v-if="isOnline">
         <GChart type="ComboChart" :data="chartData" :options="chartOptions"/>
-        <label><Equation data="$W_{TO}$"/>: <input v-model.number="weight"/> lb</label><br>
-        <span>Thrust: {{thrust.toFixed(2)}} lb
-          Wing area: {{wingArea.toFixed(2)}} <Equation data="$ft^2$"/></span>
+        <div class="controls">
+          <button @click="showOptimum = !showOptimum">
+            {{showOptimum ? "Hide optimum point" : "Show optimum point"}}
+          </button><br>
+          <button @click="showExampleAircraft = !showExampleAircraft">
+            {{showExampleAircraft ? "Hide example aircraft" : "Show example aircraft"}}
+          </button><br>
+          <label><Equation data="$W_{TO}$"/>: <input v-model.number="weight"/> lb</label><br>
+          <span>Thrust: {{thrust.toFixed(2)}} lb
+            Wing area: {{wingArea.toFixed(2)}} <Equation data="$ft^2$"/></span>
+        </div>
       </div>
       <div v-else>Charts are not available offline</div>
       <div id="inputs">
@@ -111,7 +119,7 @@ export default class ConstraintsGraph extends Vue {
   /**
    * the aircraft gross weight [lb]
    */
-  public weight: number = 27000;
+  public weight: number = 37000;
 
   /**
    * the thrust calculated using the optimum thrust to weight point
@@ -234,6 +242,16 @@ export default class ConstraintsGraph extends Vue {
    * which constraint fields to show for editing
    */
   public editWhichConstraint: string = '';
+
+  /**
+   * toggle the optimum point annotation
+   */
+  public showOptimum: boolean = true;
+
+  /**
+   * toggle the example aircraft annotations
+   */
+  public showExampleAircraft: boolean = true;
 
   /**
    * the values for the x-axis
@@ -366,7 +384,7 @@ export default class ConstraintsGraph extends Vue {
       { label: 'Wing loading', type: 'number' },
       // separate series for example aircraft and optimum point annotations
       { type: 'number' }, { type: 'string', role: 'annotation' },
-      { type: 'string', role: 'annotationText', p: { html: true } },
+      { type: 'string', role: 'tooltip', p: { html: true } },
       // constraint series
       { label: 'Takeoff run', type: 'number' }, { type: 'string', role: 'tooltip', p: { html: true } },
       { label: 'Sustained turn', type: 'number' }, { type: 'string', role: 'tooltip', p: { html: true } },
@@ -379,35 +397,39 @@ export default class ConstraintsGraph extends Vue {
     ];
     const numOfConstraintSeries = this.constraintSeriesData(0).length * 2;
     const exampleAircraft = [
-      ['121', '.2884', '737-300', '<span>737-300</span><br>T/W: 0.2884 W/S: 121',
+      ['69.85', '.2334', 'ATR42-500', '<span>ATR42-500</span><br>T/W: 0.2334 W/S: 69.85',
         ...(new Array(numOfConstraintSeries)).fill(null)],
-      ['62.83', '.212', 'ATR-300', '<span>ATR-300</span><br>T/W: 0.212 W/S: 62.83',
+      ['71.07', '.2287', 'Q300', '<span>Q300</span><br>T/W: 0.2287 W/S: 71.07',
         ...(new Array(numOfConstraintSeries)).fill(null)],
-      ['71.07', '.221', 'Q300-8', '<span>Q300-8</span><br>T/W: 0.221 W/S: 71.07',
-        ...(new Array(numOfConstraintSeries)).fill(null)],
-      ['52.06', '.3708', 'DHC-5', '<span>DHC-5</span><br>T/W: 0.3708 W/S: 52.06',
+      ['44.96', '.2617', 'DHC-5A', '<span>DHC-5A</span><br>T/W: 0.2617 W/S: 44.96',
         ...(new Array(numOfConstraintSeries)).fill(null)],
     ];
+    const optimumPoint = [
+      this.wingLoadingAtOptThrustToWeight,
+      this.optThrustToWeight,
+      'Optimum',
+      `Optimum T/W: ${this.optThrustToWeight}<br>Optimum W/S: ${this.wingLoadingAtOptThrustToWeight}`,
+      ...(new Array(numOfConstraintSeries)).fill(null),
+    ];
+    // construct constraint data series
     const rows = this.xAxis.map((wingLoading, index) => {
       const thrustToWeightRatios = this.constraintSeriesData(index);
-      let optimumPoint = null;
-      let annotation = null;
-      let annotationText = null;
-      if (wingLoading === this.wingLoadingAtOptThrustToWeight) {
-        optimumPoint = this.optThrustToWeight;
-        annotation = 'Optimum';
-        annotationText = `Optimum T/W: ${this.optThrustToWeight}<br>Optimum W/S: ${wingLoading}`;
-      }
       const combinedConstraintTooltipData = thrustToWeightRatios.map((data, i) =>
         [data, this.constraintSeriesTooltip(index)[i]]).reduce((a, b) => a.concat(b));
       return [
         wingLoading,
-        optimumPoint,
-        annotation,
-        annotationText,
+        null, null, null, // for annotation data series
         ...combinedConstraintTooltipData];
     });
-    const data = [header, ...exampleAircraft, ...rows];
+    // construct final chart data
+    const data: any[][] = [header];
+    if (this.showOptimum) {
+      data.push(optimumPoint);
+    }
+    if (this.showExampleAircraft) {
+      data.push(...exampleAircraft);
+    }
+    data.push(...rows);
     return data;
   }
 
@@ -431,7 +453,13 @@ export default class ConstraintsGraph extends Vue {
       tooltip: { isHtml: true },
       seriesType: 'area',
       series: {
-        0: { visibleInLegend: false, type: 'line', lineWidth: 0 },
+        0: {
+          visibleInLegend: false,
+          type: 'line',
+          lineWidth: 0,
+          pointShape: 'circle',
+          pointSize: 3,
+        },
         7: { type: 'steppedArea' },
         8: { type: 'steppedArea' },
       },
