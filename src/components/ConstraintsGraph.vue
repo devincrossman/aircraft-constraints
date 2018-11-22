@@ -24,9 +24,9 @@
             <option value="editTakeoffRun">Takeoff run</option>
             <option value="editSustainedTurn">Sustained turn</option>
             <option value="editClimbRate">Climb rate</option>
-            <option value="editClimbAngle">Climb angle</option>
+            <!-- <option value="editClimbAngle">Climb angle</option> -->
             <option value="editLandingDistance">Landing distance</option>
-            <option value="editStallSpeed">Stall speed</option>
+            <!-- <option value="editStallSpeed">Stall speed</option> -->
             <option value="editServiceCeiling">Service ceiling</option>
             <option value="editCruiseSpeed">Cruise speed</option>
           </select>
@@ -43,18 +43,18 @@
               <ClimbRateFields :constraint="climbRateConstraint"
                 v-show="editWhichConstraint === 'editClimbRate'"/>
             </transition>
-            <transition name="slide-fade">
+            <!-- <transition name="slide-fade">
               <ClimbAngleFields :constraint="climbAngleConstraint"
                 v-show="editWhichConstraint === 'editClimbAngle'"/>
-            </transition>
+            </transition> -->
             <transition name="slide-fade">
               <LandingDistanceFields :constraint="landingDistanceConstraint"
                 v-show="editWhichConstraint === 'editLandingDistance'"/>
             </transition>
-            <transition name="slide-fade">
+            <!-- <transition name="slide-fade">
               <StallSpeedFields :constraint="stallSpeedConstraint"
                 v-show="editWhichConstraint === 'editStallSpeed'"/>
-            </transition>
+            </transition> -->
             <transition name="slide-fade">
               <ServiceCeilingFields :constraint="serviceCeilingConstraint"
                 v-show="editWhichConstraint === 'editServiceCeiling'"/>
@@ -268,10 +268,10 @@ export default class ConstraintsGraph extends Vue {
       this.takeoffRunChartData[index],
       this.sustainedTurnChartData[index],
       this.climbRateChartData[index],
-      this.climbAngleChartData[index],
+      // this.climbAngleChartData[index],
       this.serviceCeilingChartData[index],
       this.cruiseSpeedChartData[index],
-      this.stallSpeedChartData[index],
+      // this.stallSpeedChartData[index],
       this.landingDistanceChartData[index],
     ] as number[]);
   }
@@ -286,14 +286,14 @@ export default class ConstraintsGraph extends Vue {
       ['Takeoff run', this.takeoffRunChartData[index]],
       ['Sustained turn', this.sustainedTurnChartData[index]],
       ['Climb rate', this.climbRateChartData[index]],
-      ['Climb angle', this.climbAngleChartData[index]],
+      // ['Climb angle', this.climbAngleChartData[index]],
       ['Service ceiling', this.serviceCeilingChartData[index]],
       ['Cruise speed', this.cruiseSpeedChartData[index]],
     ].map(data =>
       `<span>${data[0]}</span><br>T/W: ${(data[1] as number).toFixed(3)}
       W/S: ${this.xAxis[index]}`)
-      .concat([`<span>Stall speed</span><br>
-      W/S: ${this.stallSpeedWingLoading.toFixed(2)}`])
+      // .concat([`<span>Stall speed</span><br>
+      // W/S: ${this.stallSpeedWingLoading.toFixed(2)}`])
       .concat([`<span>Landing distance</span><br>
       W/S: ${this.landingDistanceWingLoading.toFixed(2)}`]);
   }
@@ -389,19 +389,19 @@ export default class ConstraintsGraph extends Vue {
       { label: 'Takeoff run', type: 'number' }, { type: 'string', role: 'tooltip', p: { html: true } },
       { label: 'Sustained turn', type: 'number' }, { type: 'string', role: 'tooltip', p: { html: true } },
       { label: 'Climb rate', type: 'number' }, { type: 'string', role: 'tooltip', p: { html: true } },
-      { label: 'Climb angle', type: 'number' }, { type: 'string', role: 'tooltip', p: { html: true } },
+      // { label: 'Climb angle', type: 'number' },
+      // { type: 'string', role: 'tooltip', p: { html: true } },
       { label: 'Service ceiling', type: 'number' }, { type: 'string', role: 'tooltip', p: { html: true } },
       { label: 'Cruise speed', type: 'number' }, { type: 'string', role: 'tooltip', p: { html: true } },
-      { label: 'Stall speed', type: 'number' }, { type: 'string', role: 'tooltip', p: { html: true } },
+      // { label: 'Stall speed', type: 'number' },
+      // { type: 'string', role: 'tooltip', p: { html: true } },
       { label: 'Landing distance', type: 'number' }, { type: 'string', role: 'tooltip', p: { html: true } },
     ];
     const numOfConstraintSeries = this.constraintSeriesData(0).length * 2;
     const exampleAircraft = [
-      ['69.85', '.2334', 'ATR42-500', '<span>ATR42-500</span><br>T/W: 0.2334 W/S: 69.85',
+      ['69.85', '.278', 'ATR42-500', '<span>ATR42-500</span><br>T/W: 0.278 W/S: 69.85',
         ...(new Array(numOfConstraintSeries)).fill(null)],
-      ['71.07', '.2287', 'Q300', '<span>Q300</span><br>T/W: 0.2287 W/S: 71.07',
-        ...(new Array(numOfConstraintSeries)).fill(null)],
-      ['44.96', '.2617', 'DHC-5A', '<span>DHC-5A</span><br>T/W: 0.2617 W/S: 44.96',
+      ['44.96', '.335', 'DHC-5A', '<span>DHC-5A</span><br>T/W: 0.335 W/S: 44.96',
         ...(new Array(numOfConstraintSeries)).fill(null)],
     ];
     const optimumPoint = [
